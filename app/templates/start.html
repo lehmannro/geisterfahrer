@@ -7,8 +7,7 @@
     
     <style type="text/css">
         #panicButton{
-            color:green;
-            background-color:#F0FAC8;
+            background-color:red;
             font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
             font-size:500%;
             font-weight:bold;
@@ -21,12 +20,20 @@
             margin-left:auto;
             margin-right:auto;
             width:5em;
+            box-shadow: inset 0 1px 10px 1px #ddd, 0 1px 0 #000, 0 6px 0 #444, 0 8px 4px 1px #444;
+            top: -7px;
+            position: relative;
         }
+        #panicButton:active {
+            box-shadow: inset 0 1px 10px 1px #bbb, 0 1px 0 #000, 0 2px 0 #444, 0 4px 3px 0px #444;
+            position: relative;
+            top: -2px;
+}
     </style>
 
 </head>
 <body>
-  <a id="panicButton" href="javascript:doit();">PANIK!</a>
+  <a id="panicButton" href="javascript:doit();">Panik!</a>
   <br/>
 <script type="text/javascript" charset="utf-8">
     
