@@ -25,7 +25,7 @@ function checkIncident(position) {
 
     var client = new XMLHttpRequest();
     client.open("POST", "/check");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(position.timestamp).toISOString());
+    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp) / 1000).toISOString());
     client.onreadystatechange = warn;
 }
 
@@ -37,13 +37,25 @@ function warn(){
     }
 }
 
+if (navigator.userAgent.match(/iPhone/i)) {
+  function millis(domTimeStamp) {
+    return domTimeStamp / 1000;
+  };
+}
+else {
+  function millis(domTimeStamp) {
+    return domTimeStamp;
+  };
+}
+
+
 function cb(position) {
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
 
     var client = new XMLHttpRequest();
     client.open("POST", "/new");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(position.timestamp).toISOString());
+    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp) / 1000).toISOString());
     //client.send("lat="+lat+"&lon="+lon+"&timestamp="+position.timestamp.toJSON());
     client.onreadystatechange = cb2;
 }
