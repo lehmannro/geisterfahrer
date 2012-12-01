@@ -31,7 +31,10 @@ def getStreet(lat,lon):
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
     filehandle = urllib.urlopen( url )
     dic = json.load( filehandle )
-    address_components = dic["results"][0]["address_components"]
+    results = dic["results"]
+    if not results:
+      return ""
+    address_components = results[0]["address_components"]
     for i, component in enumerate(address_components):
         if "route" in component["types"]:
             break
