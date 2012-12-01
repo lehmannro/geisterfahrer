@@ -9,24 +9,12 @@
   <br/>
 <script type="text/javascript" charset="utf-8">
 function cb(position) {
-  document.write("<br/><b>coords.latitude:</b> " + position.coords.latitude);
-  document.write("<br/><b>coords.longitude:</b> " + position.coords.longitude);
-  document.write("<br/><b>coords.altitude:</b> " + position.coords.altitude);
-  document.write("<br/><b>coords.accuracy:</b> " + position.coords.accuracy);
-  document.write("<br/><b>coords.altitudeAccuracy:</b> " + position.coords.altitudeAccuracy);
-  document.write("<br/><b>coords.heading:</b> " + position.coords.heading);
-  document.write("<br/><b>coords.speed:</b> " + position.coords.speed);
-  document.write("<br/><b>timestamp:</b> " + position.timestamp);
-  document.write("<hr>");
-
   var lat = position.coords.latitude;
   var lon = position.coords.longitude;
 
-  var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true";
   var client = new XMLHttpRequest();
-  client.onreadystatechange = cb2;
-  client.open("GET", url);
-  client.send();
+  client.open("POST", "/new");
+  client.send("lat="+lat+"&lon="+lon);
 }
 function cb2() {
   alert(this.responseXML);
