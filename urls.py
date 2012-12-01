@@ -8,6 +8,8 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'start.html'}),
     url(r'^new$', 'app.views.post'),
+    
+    url(r'^check$', 'app.views.check'),
     # url(r'^geisterfahrer/', include('geisterfahrer.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

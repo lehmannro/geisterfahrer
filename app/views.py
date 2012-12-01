@@ -14,17 +14,32 @@ def post(request):
     
     # lookup the street from googles api
     street = getStreet(lat, lng)
-    res =  street["results"][0]["address_components"][0]["short_name"]
-    print res
+    print street
 
     # store the object in the database
-    Incident.objects.create(lat=float(lat),lng=float(lng),street=res,timestamp=timestamp)
+    Incident.objects.create(lat=float(lat),lng=float(lng),street=street,timestamp=timestamp)
 
-    return HttpResponse(content=res)
+    return HttpResponse(content=street)
 
 
 def getStreet(lat,lon):
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
     filehandle = urllib.urlopen( url )
     dic = json.load( filehandle )
-    return dic
+    return dic["results"][0]["address_components"][0]["short_name"]
+
+
+def check(request):
+    lat = request.POST['lat']
+    lng = request.POST['lon']
+    # timestamp = request.POST['timestamp']
+    street = getStreet(lat, lng)
+
+    print 'af'
+    if Incident.objects.filter(street=street).exists():
+        return HttpResponse(content="Geisterfahrer auf " + street)
+    else:
+        return HttpResponse()
+        
+
+
