@@ -6,18 +6,30 @@
   <title>Start</title>
 </head>
 <body>
-  <a href="javascript:doit();">do it!</a>
+  <a href="javascript:doit();">PANIK!</a>
   <br/>
 <script type="text/javascript" charset="utf-8">
-
-$(document).ready(function() {
+    
+function lookup(){
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(checkIncident, err);
     }
     else {
         document.write("No navigator.location!");
     }
-}); 
+}
+
+
+// update every 20s
+ window.setInterval(timerHandler, 20000);
+
+ function timerHandler(){
+    lookup(); 
+ }
+
+$(document).ready(
+        lookup
+); 
 
 function checkIncident(position) {
     var lat = position.coords.latitude;
