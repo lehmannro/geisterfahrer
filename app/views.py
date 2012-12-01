@@ -3,6 +3,8 @@ import urllib
 import json
 from app.models import Incident
 
+from lib.helpers import distance
+
 def post(request):
     # print request.POST['lat'], request.POST['lon'], request.POST['timestamp']
     
@@ -34,12 +36,34 @@ def check(request):
     lng = request.POST['lon']
     # timestamp = request.POST['timestamp']
     street = getStreet(lat, lng)
+    
+    lat = float(lat)
+    lng = float(lng)
 
-    print 'af'
-    if Incident.objects.filter(street=street).exists():
-        return HttpResponse(content="Geisterfahrer auf " + street)
+    #if Incident.objects.filter(street=street).exists():
+    #    return HttpResponse(content="Geisterfahrer auf " + street)
+    #else:
+    #    return HttpResponse()
+
+    print 'checking for relevant incidents'
+    if critical(lat,lng,street):
+        return HttpResponse(content="Geisterfahrer auf deiner strasse:" + street)
     else:
         return HttpResponse()
-        
+
+
+       
+
+def critical(lat,lng,street):
+    relevantIncidents = Incident.objects.filter(street=street)
+    
+    # search for incidents less than 50 km
+    collection = [i for i in relevantIncidents if distance( (i.lat,i.lng),(lat,lng)) < 50 ] 
+    
+    # 
+    if collection:
+        return True
+    else:
+        return False
 
 
