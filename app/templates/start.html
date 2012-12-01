@@ -54,11 +54,8 @@ REFRESH_HURRY = 20000;
 
 refreshTimeout = REFRESH_DEFAULT;
 
- function timerHandler(){
-    lookup(); 
- }
 
-$(document).ready(timerHandler);
+$(document).ready(lookup);
 
 function checkIncident(position) {
     var lat = position.coords.latitude;
@@ -82,8 +79,8 @@ function warn(){
         else {
           refreshTimeout = REFRESH_DEFAULT;
         }
+        window.setTimeout(timerHandler, refreshTimeout);
     }
-    window.setTimeout(timerHandler, refreshTimeout);
 }
 
 if (navigator.userAgent.match(/iPhone/i)) {
