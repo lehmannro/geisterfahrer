@@ -86,7 +86,7 @@ function warn(){
 
 if (navigator.userAgent.match(/iPhone/i)) {
   function millis(domTimeStamp) {
-    return domTimeStamp / 1000;
+    return domTimeStamp / 1000 / 1000;
   };
 }
 else {
