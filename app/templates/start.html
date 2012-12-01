@@ -76,6 +76,7 @@ function warn(){
           refreshTimeout = REFRESH_HURRY;
           if (this.responseText != "warning") {
             $("#warning").text(this.responseText).slideDown();
+            // $("#audio1")[0].play();
           }
         }
         else {
@@ -130,7 +131,11 @@ function doit() {
         document.write("No navigator.location!");
     }
 }
-
 </script>
+
+<audio id="audio1" preload="auto">
+    <source src="{{ STATIC_URL }}/sounds/alarm.ogg" type="audio/ogg">
+</audio>
+
 </body>
 </html>
