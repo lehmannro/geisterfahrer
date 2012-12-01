@@ -3,10 +3,30 @@
 <head>
    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <title>Start</title>
+    <title>Start</title>
+    
+    <style type="text/css">
+        #panicButton{
+            color:green;
+            background-color:#F0FAC8;
+            font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+            font-size:500%;
+            font-weight:bold;
+            color: #444444;
+            line-height: 1;
+            text-decoration: none;
+            text-align:center;
+            display:block;
+            border-radius:10px;
+            margin-left:auto;
+            margin-right:auto;
+            width:5em;
+        }
+    </style>
+
 </head>
 <body>
-  <a href="javascript:doit();">PANIK!</a>
+  <a id="panicButton" href="javascript:doit();">PANIK!</a>
   <br/>
 <script type="text/javascript" charset="utf-8">
     
@@ -20,8 +40,8 @@ function lookup(){
 }
 
 
-// update every 20s
- window.setInterval(timerHandler, 20000);
+// update every 500s
+ window.setInterval(timerHandler, 500000);
 
  function timerHandler(){
     lookup(); 
