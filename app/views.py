@@ -1,15 +1,25 @@
 from django.http import HttpResponse
 import urllib
 import json
+from app.models import Incident
 
 def post(request):
-    print request.POST['lat'], request.POST['lon']
+    # print request.POST['lat'], request.POST['lon'], request.POST['timestamp']
+    
+    lat = request.POST['lat']
+    lng = request.POST['lon']
+    timestamp = request.POST['timestamp']
 
-    street = getStreet(request.POST['lat'], request.POST['lon'])
-
+    print 'lat:', lat, 'lng:', lng, 'timestamp:', timestamp
+    
+    # lookup the street from googles api
+    street = getStreet(lat, lng)
     res =  street["results"][0]["address_components"][0]["short_name"]
     print res
-    
+
+    # store the object in the database
+    Incident.objects.create(lat=float(lat),lng=float(lng),street=res,timestamp=timestamp)
+
     return HttpResponse(content=res)
 
 

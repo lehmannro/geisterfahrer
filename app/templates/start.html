@@ -14,7 +14,8 @@ function cb(position) {
 
   var client = new XMLHttpRequest();
   client.open("POST", "/new");
-  client.send("lat="+lat+"&lon="+lon);
+  client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(position.timestamp).toISOString());
+  //client.send("lat="+lat+"&lon="+lon+"&timestamp="+position.timestamp.toJSON());
   client.onreadystatechange = cb2;
 }
 
