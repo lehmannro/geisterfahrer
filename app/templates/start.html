@@ -15,10 +15,17 @@ function cb(position) {
   var client = new XMLHttpRequest();
   client.open("POST", "/new");
   client.send("lat="+lat+"&lon="+lon);
+  client.onreadystatechange = cb2;
 }
-function cb2() {
-  alert(this.responseXML);
+
+function cb2() 
+{
+	//alert(this.responseXML);
+	if(this.readyState == this.DONE){
+		alert('your street: ' + this.responseText);
+	}
 }
+
 function err(e) {
   document.write("Failed. :(<br/>");
   document.write("<br/><b>code:</b> " + e.code);
