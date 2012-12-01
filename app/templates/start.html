@@ -29,12 +29,15 @@
             position: relative;
             top: -2px;
 }
+        #warning {
+            display: none;
+        }
     </style>
 
 </head>
 <body>
   <a id="panicButton" href="javascript:doit();">Panik!</a>
-  <br/>
+  <div id="warning"></div>
 <script type="text/javascript" charset="utf-8">
     
 function lookup(){
@@ -71,7 +74,7 @@ function checkIncident(position) {
 function warn(){
     if(this.readyState == this.DONE){
         if(this.responseText){
-            alert('Achtung:' + this.responseText);
+          $("#warning").text(this.responseText).slideDown();
         }
     }
 }
@@ -101,9 +104,8 @@ function cb(position) {
 
 function cb2() 
 {
-    //alert(this.responseXML);
     if(this.readyState == this.DONE){
-        alert('your street: ' + this.responseText);
+        $("#panicButton").css("background-color", "lightgrey");
     }
 }
 
