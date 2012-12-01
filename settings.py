@@ -7,6 +7,9 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
+INCIDENT_DECAY_TIME = 4  # hours
+INCIDENT_MAX_DISTANCE = 50  # km
+
 MANAGERS = ADMINS
 
 DATABASES = {

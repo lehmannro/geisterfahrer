@@ -1,8 +1,11 @@
-from django.http import HttpResponse
+import datetime
 import urllib
 import json
-from app.models import Incident
 
+from django.conf import settings
+from django.http import HttpResponse
+
+from app.models import Incident
 from lib.helpers import distance
 
 def post(request):
@@ -28,7 +31,13 @@ def getStreet(lat,lon):
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
     filehandle = urllib.urlopen( url )
     dic = json.load( filehandle )
-    return dic["results"][0]["address_components"][0]["short_name"]
+    address_components = dic["results"][0]["address_components"]
+    for i, component in enumerate(address_components):
+        if "route" in component["types"]:
+            break
+    else:
+        i = 0
+    return address_components[i]["short_name"]
 
 
 def check(request):
@@ -36,34 +45,20 @@ def check(request):
     lng = request.POST['lon']
     # timestamp = request.POST['timestamp']
     street = getStreet(lat, lng)
-    
+
     lat = float(lat)
     lng = float(lng)
 
-    #if Incident.objects.filter(street=street).exists():
-    #    return HttpResponse(content="Geisterfahrer auf " + street)
-    #else:
-    #    return HttpResponse()
+    relevant = [i for i in Incident.objects.filter(
+        timestamp__gt = datetime.datetime.now()
+        - datetime.timedelta(hours=settings.INCIDENT_DECAY_TIME))
+        if distance((i.lat, i.lng), (lat, lng)) < settings.INCIDENT_MAX_DISTANCE]
 
-    print 'checking for relevant incidents'
-    if critical(lat,lng,street):
-        return HttpResponse(content="Geisterfahrer auf deiner strasse:" + street)
-    else:
+    if not relevant:
         return HttpResponse()
 
+    relevant = [i for i in relevant if i.street == street]
+    if not relevant:
+        return HttpResponse(content="warning")
 
-       
-
-def critical(lat,lng,street):
-    relevantIncidents = Incident.objects.filter(street=street)
-    
-    # search for incidents less than 50 km
-    collection = [i for i in relevantIncidents if distance( (i.lat,i.lng),(lat,lng)) < 50 ] 
-    
-    # 
-    if collection:
-        return True
-    else:
-        return False
-
-
+    return HttpResponse(content=street)

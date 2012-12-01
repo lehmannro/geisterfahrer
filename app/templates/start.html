@@ -49,17 +49,16 @@ function lookup(){
     }
 }
 
+REFRESH_DEFAULT = 300000;
+REFRESH_HURRY = 20000;
 
-// update every 500s
- window.setInterval(timerHandler, 500000);
+refreshTimeout = REFRESH_DEFAULT;
 
  function timerHandler(){
     lookup(); 
  }
 
-$(document).ready(
-        lookup
-); 
+$(document).ready(timerHandler);
 
 function checkIncident(position) {
     var lat = position.coords.latitude;
@@ -67,16 +66,23 @@ function checkIncident(position) {
 
     var client = new XMLHttpRequest();
     client.open("POST", "/check");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp) / 1000).toISOString());
+    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp)).toISOString());
     client.onreadystatechange = warn;
 }
 
 function warn(){
     if(this.readyState == this.DONE){
         if(this.responseText){
-          $("#warning").text(this.responseText).slideDown();
+          refreshTimeout = REFRESH_HURRY;
+          if (this.responseText != "warning") {
+            $("#warning").text(this.responseText).slideDown();
+          }
+        }
+        else {
+          refreshTimeout = REFRESH_DEFAULT;
         }
     }
+    window.setTimeout(timerHandler, refreshTimeout);
 }
 
 if (navigator.userAgent.match(/iPhone/i)) {
@@ -97,7 +103,7 @@ function cb(position) {
 
     var client = new XMLHttpRequest();
     client.open("POST", "/new");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp) / 1000).toISOString());
+    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp)).toISOString());
     //client.send("lat="+lat+"&lon="+lon+"&timestamp="+position.timestamp.toJSON());
     client.onreadystatechange = cb2;
 }
