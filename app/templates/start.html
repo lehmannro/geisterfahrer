@@ -7,9 +7,11 @@
     
     <style type="text/css">
         #panicButton{
-            background-color:red;
-            font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-            font-size:500%;
+            background-color: yellow;
+            background: -webkit-gradient(linear, left top, left bottom, from(#FFF1A3), to(#FFDC17));
+            background: -moz-linear-gradient(top, #FFF1A3, #FFDC17);
+            font-family: "Arial", sans-serif;
+            font-size:8em;
             font-weight:bold;
             color: #444444;
             line-height: 1;
@@ -17,9 +19,7 @@
             text-align:center;
             display:block;
             border-radius:10px;
-            margin-left:auto;
-            margin-right:auto;
-            width:5em;
+            margin: 27px 20px;
             box-shadow: inset 0 1px 10px 1px #ddd, 0 1px 0 #000, 0 6px 0 #444, 0 8px 4px 1px #444;
             top: -7px;
             position: relative;
@@ -36,7 +36,7 @@
 
 </head>
 <body>
-  <a id="panicButton" href="javascript:doit();">Panik!</a>
+  <a id="panicButton" href="javascript:doit();">Geisterfahrer!</a>
   <div id="warning"></div>
 <script type="text/javascript" charset="utf-8">
     
@@ -73,6 +73,7 @@ function warn(){
           refreshTimeout = REFRESH_HURRY;
           if (this.responseText != "warning") {
             $("#warning").text(this.responseText).slideDown();
+            $("body").css("border", "15px solid red")
             // $("#audio1")[0].play();
           }
         }
