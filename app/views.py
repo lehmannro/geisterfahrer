@@ -1,6 +1,7 @@
 import datetime
 import urllib
 import json
+import warnings
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -31,10 +32,10 @@ def getStreet(lat,lon):
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
     filehandle = urllib.urlopen( url )
     dic = json.load( filehandle )
-    results = dic["results"]
-    if not results:
-      return ""
-    address_components = results[0]["address_components"]
+    if dic["status"] != "OK" or not dic["results"]:
+        warnings.warn("Google Geocoding API did not return any results for (%s, %s)." % (lat, lon))
+        return ""
+    address_components = dic["results"][0]["address_components"]
     for i, component in enumerate(address_components):
         if "route" in component["types"]:
             break
