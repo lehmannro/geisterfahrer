@@ -38,13 +38,27 @@
           font-size: 8em;
           font-weight: bolder;
           font-family: "Arial", sans-serif;
+      }
+        #tools{
+            position:absolute;
+            right:0;
+            bottom:0;
+            float:right;
         }
+        /*
+        #tools a{
+            float:right;
+        }*/
     </style>
 
 </head>
 <body>
   <a id="panicButton" href="javascript:doit();">Geisterfahrer!</a>
   <div id="warning"></div>
+  <div id="tools">
+      <a href="input">Geisterfahrer auf Stra&szlig;e melden<a>
+      <a href="incidents">aktuelle Geisterfahrer</a>
+  </div>
 <script type="text/javascript" charset="utf-8">
 
 $(document).ready(function() {
