@@ -31,7 +31,7 @@ def post(request):
 
 
 def getStreet(lat, lon):
-    cache_key = "street:%s,%s"
+    cache_key = "street:%s,%s" % (lat, lon)
     cached = cache.get(cache_key)
     if cached:
         print "CACHE HIT"
