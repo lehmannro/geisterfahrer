@@ -103,7 +103,7 @@ def check(request):
         dotproduct = alertvec[0]*myvec[0] + alertvec[1]*myvec[1]
         angle = math.acos(dotproduct * 1.0 / (alertdist * mydist))
 
-        if alertdist < mydist and math.abs(angle) > 90:
+        if alertdist < mydist and abs(math.degrees(angle)) > 90:
             return render_to_json("WARNING", latest2.street)
 
     return render_to_json("ALARM", street)
