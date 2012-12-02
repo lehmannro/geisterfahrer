@@ -126,8 +126,9 @@ function doit() {
           $("#panicButton").css("background", "lightgrey");
         }, "text");
     }, function() {
-      // no geolocation
-    });
+    // no geolocation
+      alert ("Keine Geo-Lokalisation verfügbar im Moment!");
+      }, {timeout:1000});
   }
 }
 </script>
