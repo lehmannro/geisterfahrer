@@ -116,8 +116,8 @@ function getStreetName(address_components){
 
 
 function reportIncident(){
-    var lat = latLng.latitude; 
-    var lng = latLng.longitude;
+    var lat = latLng.lat();
+    var lng = latLng.lng();
     var client = new XMLHttpRequest();
     client.open("POST", "/new");
     client.send("lat=" + lat + "&lon=" + lng + "&timestamp=" + new Date().toISOString());
