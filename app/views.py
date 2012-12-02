@@ -5,6 +5,7 @@ import warnings
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.cache import cache
 
 from app.models import Incident
 from lib.helpers import distance
@@ -28,20 +29,30 @@ def post(request):
     return HttpResponse(content=street)
 
 
-def getStreet(lat,lon):
+def getStreet(lat, lon):
+    print "REQUEST", lat, lon
+    cache_key = "street:%s,%s"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
     filehandle = urllib.urlopen( url )
     dic = json.load( filehandle )
     if dic["status"] != "OK" or not dic["results"]:
         warnings.warn("Google Geocoding API did not return any results for (%s, %s)." % (lat, lon))
         return ""
-    address_components = dic["results"][0]["address_components"]
-    for i, component in enumerate(address_components):
-        if "route" in component["types"]:
-            break
+#        import random; street = "A%d" % random.randrange(10)
     else:
-        i = 0
-    return address_components[i]["short_name"]
+        address_components = dic["results"][0]["address_components"]
+        for i, component in enumerate(address_components):
+            if "route" in component["types"]:
+                break
+        else:
+            i = 0
+        street = address_components[i]["short_name"]
+    cache.set(cache_key, street)
+    return street
 
 
 def check(request):
