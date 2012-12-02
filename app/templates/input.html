@@ -80,8 +80,10 @@ function initialize() {
         directionsService.route(request, function(response, status) {
           if (status == google.maps.DirectionsStatus.OK) {
               var geocoder = new google.maps.Geocoder();
+              
               // write to global latLng
               latLng = response.routes[0].legs[0].start_location
+              
               geocoder.geocode( { 'latLng': latLng}, function(results, status) {
                   if (status == google.maps.GeocoderStatus.OK) {
                       // write to global street

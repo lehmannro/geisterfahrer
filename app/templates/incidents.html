@@ -11,15 +11,9 @@
         width:100%;
     }
 </style>
+
 <script type="text/javascript" charset="utf-8">
     
-// global "map" variable
-var map = null;
-var marker = null;
-
-var latLng = null;
-var steet = null;
-
 var infowindow = new google.maps.InfoWindow(
   { 
     size: new google.maps.Size(150,50)
@@ -44,7 +38,6 @@ function createMarker(latlng, html) {
 } 	
 
 function initialize() {
-    
   var latGermany = 51.000;
   var lngGermany = 9.000;
   // create the map
@@ -59,78 +52,40 @@ function initialize() {
   
   map = new google.maps.Map(document.getElementById("map_canvas"),
                                 myOptions);
- 
-  google.maps.event.addListener(map, 'click', function() {
+
+  {% for o in object_list%}
+      var latlng = new google.maps.LatLng( {{ o.lat }}, {{ o.lng }});
+      var street = "{{ o.street }}";
+      createMarker(latlng, "<b>Geisterfahrer auf der " + street + "</b>");       
+  {% endfor %}
+
+  function createMarker(latlng, html) {
+          var infowindow = new google.maps.InfoWindow(
+          { 
+           size: new google.maps.Size(150,50)
+         });
+        var contentString = html;
+        var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+            //draggable: true,
+            zIndex: Math.round(latlng.lat()*-100000)<<5
+            });
+
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(contentString); 
+            });
+        google.maps.event.addListener( marker, 'click', function(){
+                infowindow.open(map,marker);
+        });
+        
+        return marker;
+   }
+
+  /*google.maps.event.addListener(map, 'click', function() {
         infowindow.close();
         });
-
-  
-  google.maps.event.addListener(map, 'click', function(event) {
-	//call function to create marker
-         if (marker) {
-            marker.setMap(null);
-            marker = null;
-         }
-        
-        // get the closest street:
-        var request = {
-            origin: event.latLng, 
-            destination: event.latLng,
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
-        };
-        var directionsService = new google.maps.DirectionsService();
-        directionsService.route(request, function(response, status) {
-          if (status == google.maps.DirectionsStatus.OK) {
-              var geocoder = new google.maps.Geocoder();
-              // write to global latLng
-              latLng = response.routes[0].legs[0].start_location
-              geocoder.geocode( { 'latLng': latLng}, function(results, status) {
-                  if (status == google.maps.GeocoderStatus.OK) {
-                      // write to global street
-                      street = getStreetName(results[0].address_components);
-                      marker = createMarker(
-                          latLng, 
-                          "<b>Position Geisterfahrer:</b><br>"
-                          + street + "<br>"
-                          + "<a href='javascript:reportIncident()'>Melden!</a>"
-                      );
-                  } else {
-                    alert("Geocode was not successful for the following reason: " + status);
-                  }
-              });
-
-          }
-        });        
-  });
-}
-
-function getStreetName(address_components){
-    for(var i = 0; i < address_components.length; i++){
-        for(var j = 0; j < address_components[i].types.length; j++){
-            if (address_components[i].types[j] == "route"){
-                return address_components[i].short_name;
-            }
-        }
-    }
-    return address_components[0].short_name;
-}
-
-
-
-function reportIncident(){
-    var lat = latLng.lat();
-    var lng = latLng.lng();
-    // debugger;
-    var client = new XMLHttpRequest();
-    client.open("POST", "/new");
-    client.send("lat=" + lat + "&lon=" + lng + "&timestamp=" + new Date().toISOString());
-    client.onreadystatechange = reported;
-}
-
-function reported(){
-    if(this.readyState == this.DONE){
-        alert('Meldung wurde registrier!'); 
-    }
+    */
 }
 
 </script>
