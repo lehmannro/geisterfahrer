@@ -6,6 +6,10 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <title>Benutzereingabe Geisterfahrer</title>
 <style type="text/css">
+    html{
+        height:100%;
+        width:100%;
+    }
     #submitButton{
         background-color: yellow;
         background: -webkit-gradient(linear, left top, left bottom, from(#FFF1A3), to(#FFDC17));
@@ -45,11 +49,12 @@ var infowindow = new google.maps.InfoWindow(
 });
 
 // A function to create the marker and set up the event window function 
-function createMarker(latlng, name, html) {
+function createMarker(latlng, html) {
     var contentString = html;
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
+        //draggable: true,
         zIndex: Math.round(latlng.lat()*-100000)<<5
         });
 
@@ -82,21 +87,65 @@ function initialize() {
         infowindow.close();
         });
 
+  
   google.maps.event.addListener(map, 'click', function(event) {
 	//call function to create marker
          if (marker) {
             marker.setMap(null);
             marker = null;
          }
-	 marker = createMarker(event.latLng, "name", "<b>Position Geisterfahrer:</b><br>"+event.latLng);
+        
+        // get the closest street:
+        var request = {
+            origin: event.latLng, 
+            destination: event.latLng,
+            travelMode: google.maps.DirectionsTravelMode.DRIVING
+        };
+        var directionsService = new google.maps.DirectionsService();
+        directionsService.route(request, function(response, status) {
+          if (status == google.maps.DirectionsStatus.OK) {
+              var geocoder = new google.maps.Geocoder();
+              var latLng = response.routes[0].legs[0].start_location              
+              geocoder.geocode( { 'latLng': latLng}, function(results, status) {
+                  if (status == google.maps.GeocoderStatus.OK) {
+                      marker = createMarker(
+                          latLng, 
+                          "<b>Position Geisterfahrer:</b><br>"
+                          + getStreetName(results[0].address_components) + "<br>"
+                          + "<a href='javascript:submit()'>Melden!</a>"
+                      );
+                  } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                  }
+              });
+
+          }
+        });        
+/*
+        marker = createMarker(event.latLng, 
+             "<b>Position Geisterfahrer:</b><br>" 
+             + event.latLng + "<br>"
+             + "<a href='javascript:submit()'>Melden!</a>");
+*/
   });
+
+function getStreetName(address_components){
+    for(var i = 0; i < address_components.length; i++){
+        for(var j = 0; j < address_components[i].types.length; j++){
+            if (address_components[i].types[j] == "route"){
+                return address_components[i].short_name;
+            }
+        }
+    }
+    return address_components[0].short_name;
+}
+
 }
 </script>
 
 </head>
 <body style="width:100%; height:100%; margin:0px; padding:0px;" onload="initialize()"> 
     <!-- you can use tables or divs for the overall layout --> 
-    <!-- div id="map_canvas" style="width: 550px; height: 450px"></div --> 
     
     <div id="map_canvas" style="width:100%; height:100%"></div> 
     
