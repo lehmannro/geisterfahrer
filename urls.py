@@ -7,6 +7,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'start.html'}),
+    url(r'^input$', 'django.views.generic.simple.direct_to_template', {'template': 'input.html'}),
+    
     url(r'^new$', 'app.views.post'),
     
     url(r'^check$', 'app.views.check'),
