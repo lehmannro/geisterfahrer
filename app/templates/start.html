@@ -6,6 +6,9 @@
     <title>Geisterfahrer</title>
     
     <style type="text/css">
+        body {
+            margin: 0;
+        }
         #panicButton{
             background-color: yellow;
             background: -webkit-gradient(linear, left top, left bottom, from(#FFF1A3), to(#FFDC17));
@@ -74,7 +77,10 @@ function warn(){
           if (this.responseText != "warning") {
             $("#warning").text(this.responseText).slideDown();
             $("body").css("border", "15px solid red")
-            // $("#audio1")[0].play();
+            $("#audio1")[0].play();
+          }
+          else {
+            $("body").css("background-color", "yellow");
           }
         }
         else {
