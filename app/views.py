@@ -16,6 +16,7 @@ def post(request):
     lat = request.POST['lat']
     lng = request.POST['lon']
     timestamp = request.POST['timestamp']
+    timestamp = datetime.datetime.now()
 
     print 'lat:', lat, 'lng:', lng, 'timestamp:', timestamp
     
@@ -30,10 +31,10 @@ def post(request):
 
 
 def getStreet(lat, lon):
-    print "REQUEST", lat, lon
     cache_key = "street:%s,%s"
     cached = cache.get(cache_key)
     if cached:
+        print "CACHE HIT"
         return cached
 
     url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&sensor=true"
@@ -54,6 +55,14 @@ def getStreet(lat, lon):
     cache.set(cache_key, street)
     return street
 
+def render_to_json(status, message=None):
+    response = dict(status=status)
+    if message:
+        response['message'] = message
+    return HttpResponse(
+        content=json.dumps(response),
+        mimetype="application/json",
+    )
 
 def check(request):
     lat = request.POST['lat']
@@ -70,10 +79,11 @@ def check(request):
         if distance((i.lat, i.lng), (lat, lng)) < settings.INCIDENT_MAX_DISTANCE]
 
     if not relevant:
-        return HttpResponse()
+      return render_to_json("OK")
 
     relevant = [i for i in relevant if i.street == street]
+    print "CHECK", street
     if not relevant:
-        return HttpResponse(content="warning")
+        return render_to_json("WARNING")
 
-    return HttpResponse(content=street)
+    return render_to_json("ALARM", street)

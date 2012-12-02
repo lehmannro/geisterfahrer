@@ -42,98 +42,74 @@
   <a id="panicButton" href="javascript:doit();">Geisterfahrer!</a>
   <div id="warning"></div>
 <script type="text/javascript" charset="utf-8">
-    
-function lookup(){
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(checkIncident, err);
-    }
-    else {
-        document.write("No navigator.location!");
-    }
-}
 
+$(document).ready(function() {
+  if (navigator.geolocation) {
+    check();
+  }
+});
+    
 REFRESH_DEFAULT = 300000;
 REFRESH_HURRY = 20000;
 
-refreshTimeout = REFRESH_DEFAULT;
-
-
-$(document).ready(lookup);
-
-function checkIncident(position) {
+function check() {
+  navigator.geolocation.getCurrentPosition(function(position) {
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
-
-    var client = new XMLHttpRequest();
-    client.open("POST", "/check");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp)).toISOString());
-    client.onreadystatechange = warn;
-}
-
-function warn(){
-    if(this.readyState == this.DONE){
-        if(this.responseText){
-          refreshTimeout = REFRESH_HURRY;
-          if (this.responseText != "warning") {
-            $("#warning").text(this.responseText).slideDown();
-            $("body").css("border", "15px solid red")
-            $("#audio1")[0].play();
-          }
-          else {
-            $("body").css("background-color", "yellow");
-          }
+    $.post("/check",
+      {lat: lat,
+        lon: lon,
+        timestamp: domTStoISO(position.timestamp),
+      },
+      function(data) {
+        if (data.status == "OK") {
+          window.setTimeout(check, REFRESH_DEFAULT);
+          return;
         }
-        else {
-          refreshTimeout = REFRESH_DEFAULT;
+        if (data.status == "WARNING") {
+          $("body").css("background-color", "yellow");
         }
-        window.setTimeout(lookup, refreshTimeout);
-    }
+        else if (data.status == "ALARM") {
+          $("#warning").text(data.message).slideDown();
+          $("body").css("border", "15px solid red")
+          $("#audio1")[0].play();
+        }
+        window.setTimeout(check, REFRESH_HURRY);
+      });
+  }, function() { 
+    // no geolocation
+  });
 }
 
 if (navigator.userAgent.match(/iPhone/i)) {
-  function millis(domTimeStamp) {
-    return domTimeStamp / 1000 / 1000;
+  function domTStoISO(value) {
+    return new Date(value / 1000).toISOString();
   };
 }
 else {
-  function millis(domTimeStamp) {
-    return domTimeStamp;
+  function domTStoISO(value) {
+    return new Date(value).toISOString();
   };
 }
 
 
-function cb(position) {
-    var lat = position.coords.latitude;
-    var lon = position.coords.longitude;
-
-    var client = new XMLHttpRequest();
-    client.open("POST", "/new");
-    client.send("lat="+lat+"&lon="+lon+"&timestamp="+new Date(millis(position.timestamp)).toISOString());
-    //client.send("lat="+lat+"&lon="+lon+"&timestamp="+position.timestamp.toJSON());
-    client.onreadystatechange = cb2;
-}
-
-function cb2() 
-{
-    if(this.readyState == this.DONE){
-        $("#panicButton").css("background", "lightgrey");
-    }
-}
-
-function err(e) {
-    document.write("Failed. :(<br/>");
-    document.write("<br/><b>code:</b> " + e.code);
-    document.write("<br/><b>message:</b> " + e.message);
-    document.write("<hr>");
-}
-
 function doit() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(cb, err);
-    }
-    else {
-        document.write("No navigator.location!");
-    }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var lat = position.coords.latitude;
+      var lon = position.coords.longitude;
+
+      $.post("/new", {
+        lat: lat,
+        lon: lon,
+        timestamp: domTStoISO(position.timestamp),
+        }, function(response) { 
+          $("#panicButton").css("background", "lightgrey");
+        }, "text");
+    }, function() {
+      // no geolocation
+    });
+  }
 }
 </script>
 
