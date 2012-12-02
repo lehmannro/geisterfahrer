@@ -33,7 +33,11 @@
             top: -2px;
 }
         #warning {
-            display: none;
+          display: none;
+          text-align: center;
+          font-size: 8em;
+          font-weight: bolder;
+          font-family: "Arial", sans-serif;
         }
     </style>
 
@@ -71,7 +75,7 @@ function check() {
         }
         else if (data.status == "ALARM") {
           $("#warning").text(data.message).slideDown();
-          $("body").css("border", "15px solid red")
+          $("body").css("background-color", "red")
           $("#audio1")[0].play();
         }
         window.setTimeout(check, REFRESH_HURRY);
