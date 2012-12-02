@@ -3,6 +3,7 @@ import urllib
 import json
 import warnings
 import operator
+import math
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -91,8 +92,18 @@ def check(request):
             max(relevant, key=BY_TIMESTAMP).street)
 
     if len(relevant) > 1:
-        latest, latest2 = sorted(relevant, key=BY_TIMESTAMP)[:2]
-        if 1:
-          pass
+        latest1, latest2 = sorted(relevant, key=BY_TIMESTAMP, reverse=True)[:2]
+
+        alertvec = (latest1.lat - latest2.lat, latest1.lng - latest2.lng)
+        myvec = (lat - latest2.lat, lng - latest2.lng)
+
+        alertdist = math.sqrt(alertvec[0]**2 + alertvec[1]**2)
+        mydist = math.sqrt(myvec[0]**2 + myvec[1]**2)
+
+        dotproduct = alertvec[0]*myvec[0] + alertvec[1]*myvec[1]
+        angle = math.acos(dotproduct * 1.0 / (alertdist * mydist))
+
+        if alertdist < mydist and math.abs(angle) > 90:
+            return render_to_json("WARNING", latest2.street)
 
     return render_to_json("ALARM", street)
