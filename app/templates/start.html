@@ -72,9 +72,10 @@ function check() {
         }
         if (data.status == "WARNING") {
           $("body").css("background-color", "yellow");
+          $("#warning").text("Straße: " + data.message).slideDown();
         }
         else if (data.status == "ALARM") {
-          $("#warning").text(data.message).slideDown();
+          $("#warning").text("Straße: " + data.message).slideDown();
           $("body").css("background-color", "red")
           $("#audio1")[0].play();
         }

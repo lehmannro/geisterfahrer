@@ -2,6 +2,7 @@ import datetime
 import urllib
 import json
 import warnings
+import operator
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -64,6 +65,8 @@ def render_to_json(status, message=None):
         mimetype="application/json",
     )
 
+BY_TIMESTAMP = operator.attrgetter('timestamp')
+
 def check(request):
     lat = request.POST['lat']
     lng = request.POST['lon']
@@ -81,9 +84,15 @@ def check(request):
     if not relevant:
       return render_to_json("OK")
 
-    relevant = [i for i in relevant if i.street == street]
+    alertable = [i for i in relevant if i.street == street]
     print "CHECK", street
-    if not relevant:
-        return render_to_json("WARNING")
+    if not alertable:
+        return render_to_json("WARNING",
+            max(relevant, key=BY_TIMESTAMP).street)
+
+    if len(relevant) > 1:
+        latest, latest2 = sorted(relevant, key=BY_TIMESTAMP)[:2]
+        if 1:
+          pass
 
     return render_to_json("ALARM", street)
